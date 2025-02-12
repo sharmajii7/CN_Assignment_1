@@ -3,7 +3,7 @@ import sys
 import time
 import platform
 
-script_name = "echo-client.py"
+script_name = "echoClient.py"
 
 for index in range(5):
     cmd = [sys.executable, script_name, str(index)]
