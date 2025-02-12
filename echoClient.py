@@ -229,7 +229,7 @@ def send_all_peers(data,peer_port):
 def send_messages():
     while True:
         sleep(time_to_send_message)
-        data = random.choice(['hello', 'hi', 'bye'])
+        data = random.choice(['hello', 'namaste', 'bonjour', 'ciao', 'konnichiwa'])
         time_stamp = time.localtime() 
         message = {'type':'message', 'data':data, 'time':time.asctime(time_stamp)}
         send_all_peers(message,None)
