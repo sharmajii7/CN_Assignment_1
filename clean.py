@@ -1,6 +1,9 @@
+import os
 import shutil
 
-try:
-    shutil.rmtree('bin')
-except:
-    print('bin folder does not exist')
+bin_folder = "bin"
+
+if os.path.exists(bin_folder):
+    shutil.rmtree(bin_folder)
+else:
+    print(f"{bin_folder} directory not found.")

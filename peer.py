@@ -1,13 +1,18 @@
 import subprocess
+import sys
+import time
 import platform
-from time import sleep
 
-for i in range(5):
-    command = f"py echo-client.py {i}"
+script_name = "echo-client.py"
+
+for index in range(5):
+    cmd = [sys.executable, script_name, str(index)]
+    
     if platform.system() == "Windows":
-        subprocess.Popen(["start", "cmd", "/k", command], shell=True)
+        subprocess.Popen(["cmd", "/c", "start", "cmd", "/k"] + cmd, shell=True)
     elif platform.system() == "Linux":
-        subprocess.Popen(["x-terminal-emulator", "-e", command])
+        subprocess.Popen(["gnome-terminal", "--"] + cmd)
     elif platform.system() == "Darwin":  # macOS
-        subprocess.Popen(["open", "-a", "Terminal", command])
-    sleep(6)
+        subprocess.Popen(["osascript", "-e", f'tell application "Terminal" to do script "python3 {script_name} {index}"'])
+    
+    time.sleep(6)

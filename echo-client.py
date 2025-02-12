@@ -66,11 +66,11 @@ def remove_padding(data):
 def send_death_message(peer_port):
     
     cur_time = time.localtime()
-    message = {'type':'Death','ip':my_addr[0],'port':peer_port,'time':time.asctime(cur_time)}
+    message = {'type':'Death', 'ip':my_addr[0], 'port':peer_port, 'time':time.asctime(cur_time)}
     message = add_padding(json.dumps(message)).encode()
     # write the message to the output file
-    with open(output_file,'a') as f:
-        logger.info( f"Sending death message to {peer_port}",extra={'log_color':'INFO[death]'})
+    with open(output_file, 'a') as f:
+        logger.info( f"Sending death message to {peer_port}", extra={'log_color':'INFO[death]'})
     
     # send the message to the seed nodes
     for socket in server_sockets:
@@ -85,7 +85,7 @@ def check_liveness(peer_port):
     global connected_peers
     
     cur_time = time.localtime()
-    message = {'type':'Liveness','ip':my_addr[0],'port':my_addr[1],'time':time.asctime(cur_time)}
+    message = {'type':'Liveness', 'ip':my_addr[0], 'port':my_addr[1], 'time':time.asctime(cur_time)}
     message = add_padding(json.dumps(message)).encode()
     while(True):
         # if the peer is not in the list of connected peers then close the connection
@@ -114,7 +114,7 @@ def check_liveness(peer_port):
 
 # Function to listen to the peer
 def listen_peer(peer):
-    global connected_peers,my_addr,output_file,logger
+    global connected_peers, my_addr, output_file, logger
     
     while True:
         
@@ -143,26 +143,26 @@ def listen_peer(peer):
         # if the type of the message is peer_Request then send the peer_Reply message to the peer
         if(data['type']=='peer_Request'):
             cur_time = time.localtime()
-            message = {'type':'peer_Reply','ip':my_addr[0],'port':my_addr[1],'time':time.asctime(cur_time)}
+            message = {'type':'peer_Reply', 'ip':my_addr[0], 'port':my_addr[1], 'time':time.asctime(cur_time)}
             message = add_padding(json.dumps(message)).encode()
             peer.conn.sendall(message)
             peer.ip = data['ip']
             peer.port = data['port']                                           
             
             # write the peer request to the output file
-            with open(output_file,'a') as f:
-                logger.info(f"Peer request from {peer.ip}:{peer.port}",extra={'log_color':'INFO[peer_request]'})
+            with open(output_file, 'a') as f:
+                logger.info(f"Peer request from {peer.ip}:{peer.port}", extra={'log_color':'INFO[peer_request]'})
             
             # add the peer to the list of connected peers
             connected_peers[peer.port] = peer
             
             # start a new thread to check the liveness of the peer
-            start_new_thread(check_liveness,(peer.port,))
+            start_new_thread(check_liveness, (peer.port, ))
 
         # if the type of the message is peer_Reply then write the peer request accepted to the output file
-        elif data['type']=='peer_Reply':
-            with open(output_file,'a') as f:
-                logger.info(f"Peer request accepted from {peer.ip}:{peer.port}",extra={'log_color':'INFO[peer_reply]'})
+        elif data['type'] == 'peer_Reply':
+            with open(output_file, 'a') as f:
+                logger.info(f"Peer request accepted from {peer.ip}:{peer.port}", extra={'log_color':'INFO[peer_reply]'})
 
         # if the type of message is 'Liveness' then send the liveness_reply message to the peer
         elif data['type'] == 'Liveness':
@@ -171,15 +171,15 @@ def listen_peer(peer):
             with open(output_file,'a') as f:
                 logger.info(f"Received liveness message from {peer.ip}:{peer.port} at {data['time']}",extra={'log_color':'INFO[liveness]'})
             cur_time = time.localtime()
-            message = {'type':'Liveness_reply','ip':my_addr[0],'port':my_addr[1],'time':time.asctime(cur_time)}
+            message = {'type':'Liveness_reply', 'ip':my_addr[0], 'port':my_addr[1], 'time':time.asctime(cur_time)}
             peer.conn.sendall(add_padding(json.dumps(message)).encode())
 
         # if the type of the message is 'Liveness_reply' then decrease the number of tries
         elif data['type'] == 'Liveness_reply':
             
             # write the liveness reply to the output file
-            with open(output_file,'a') as f:
-                logger.info(f"Sending liveness reply to {peer.ip}:{peer.port} at {data['time']}",extra={'log_color':'INFO[liveness_reply]'})
+            with open(output_file, 'a') as f:
+                logger.info(f"Sending liveness reply to {peer.ip}:{peer.port} at {data['time']}", extra={'log_color':'INFO[liveness_reply]'})
             connected_peers[peer.port].tries = max(0,connected_peers[peer.port].tries-1)
 
         # Send the data to all the peers
@@ -193,7 +193,7 @@ def listen_peer(peer):
                 # peer.message_list.add(f"{data['data']}_{data['time']}")
                 message_list.add(f"{data['data']}_{data['time']}")
                 with open(output_file,'a') as f:
-                    logger.info(f'{peer.ip}:{peer.port}: {data}',extra={'log_color':'INFO[message]'})
+                    logger.info(f'{peer.ip}:{peer.port}: {data}', extra={'log_color':'INFO[message]'})
                 
                 send_all_peers(data,peer)
 
@@ -209,14 +209,14 @@ def accept_peers(sock):
         print('Connected with', addr)
 
         # start a new thread to listen to the peer
-        start_new_thread(listen_peer,(Peer(addr[0],addr[1],conn),))
+        start_new_thread(listen_peer,(Peer(addr[0], addr[1], conn), ))
 
 # Function to send data to all the peers
 def send_all_peers(data,peer_port):
     global connected_peers
     data = add_padding(json.dumps(data)).encode()
     for port in connected_peers:
-        if peer_port != None and (port==peer_port):
+        if peer_port != None and (port == peer_port):
             print(f"Skipping {Peer.ip}:{Peer.port}")
             continue
         try:
@@ -229,15 +229,15 @@ def send_all_peers(data,peer_port):
 def send_messages():
     while True:
         sleep(time_to_send_message)
-        data = random.choice(['hello','hi','bye'])
+        data = random.choice(['hello', 'hi', 'bye'])
         time_stamp = time.localtime() 
-        message = {'type':'message','data':data,'time':time.asctime(time_stamp)}
+        message = {'type':'message', 'data':data, 'time':time.asctime(time_stamp)}
         send_all_peers(message,None)
 
 
 # Main function
 def main():
-    global my_addr,connected_peers,output_file, server_sockets,logger,colors
+    global my_addr, connected_peers, output_file, server_sockets, logger, colors
 
     # create a socket for the client
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -274,7 +274,7 @@ def main():
         random.shuffle(server_sockets)
         server_sockets = server_sockets[0:(n//2+1)]
         for server_sock in server_sockets:
-            message = {'type':'getData','ip':my_addr[0],'port':my_addr[1]}
+            message = {'type':'getData', 'ip':my_addr[0], 'port':my_addr[1]}
             server_sock.sendall(json.dumps(message).encode())
             pl = server_sock.recv(2048).decode()
             print(pl)
