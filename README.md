@@ -57,10 +57,9 @@ To check network activity, run the following commands in the peer node terminal:
    ```sh
    python3 peer.py
    ```
-   Run this command multiple times (e.g., 5 times) to create multiple peer nodes.
 4. To clean up logs and output files after stopping nodes:
    ```sh
-   python3 clean.py
+   python3 logRemover.py
    ```
 
 ## Stopping a Peer Node
