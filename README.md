@@ -48,5 +48,5 @@ The peer node and peer node communicate using the following messages:
 - You can differentiate the logs based on colors of logs.
 
 ## Contributors
-- [Sameer Sharma (B21CS066)](https://github.com/SameerSharma-57)
-- [Shalin Jain (B21CS070)](https://github.com/Shalin06)
+- [Dishit Sharma (B22CS082)](https://github.com/sharmajii7)
+- [Kiran S (B22CS100)](https://github.com/)
