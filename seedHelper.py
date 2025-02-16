@@ -85,21 +85,21 @@ def broadcast_message(message, exclude_idx):
 def main(host, port, node_identifier):
     global log_file
 
-    log_file = f"bin/servers/log_{node_identifier}.txt"
+    log_file = f"bin/seeds/seed_{node_identifier}.txt"
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
         server.bind((host, port))
 
         with open(log_file, "w") as log:
-            print(f"Server started at {host}:{port}", file=log)
+            print(f"Seed started at {host}:{port}", file=log)
 
         threading.Thread(target=accept_connections, args=(server,)).start()
 
         time.sleep(5)
-        print(f"Server started at {host}:{port}")
+        print(f"Seed started at {host}:{port}")
         while True:
             time.sleep(15)
-            print("Server is running...")
+            print("Seed is running...")
 
 if __name__ == "__main__":
     main("127.0.0.1", int(sys.argv[1]), sys.argv[2])

@@ -17,7 +17,7 @@ with open(config_file, "r") as file:
             continue  # Ignore malformed lines
 
         ip_address, port_number, node_identifier = details
-        script_cmd = [os.sys.executable, "echoServer.py", port_number, node_identifier]
+        script_cmd = [os.sys.executable, "seedHelper.py", port_number, node_identifier]
 
         print(f"Launching server at port {port_number} with node ID {node_identifier}")
 

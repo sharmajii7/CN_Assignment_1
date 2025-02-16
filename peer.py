@@ -3,7 +3,7 @@ import sys
 import time
 import platform
 
-script_name = "echoClient.py"
+script_name = "peerHelper.py"
 
 for index in range(5):
     cmd = [sys.executable, script_name, str(index)]
