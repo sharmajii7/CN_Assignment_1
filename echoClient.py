@@ -321,6 +321,8 @@ def main():
                     print(peer)
             elif command == 2:
                 print(message_list)
+            else:
+                break
 
 
 if __name__ == '__main__':

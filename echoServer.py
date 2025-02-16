@@ -95,8 +95,10 @@ def main(host, port, node_identifier):
 
         threading.Thread(target=accept_connections, args=(server,)).start()
 
+        time.sleep(5)
+        print(f"Server started at {host}:{port}")
         while True:
-            time.sleep(5)
+            time.sleep(15)
             print("Server is running...")
 
 if __name__ == "__main__":
