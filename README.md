@@ -1,62 +1,80 @@
-# Seed and Peer Node
+# Peer-to-Peer Network: Seed and Peer Nodes
 
-This project simply implements a peer-to-peer network using seed and peer nodes.
+This project implements a basic peer-to-peer (P2P) network using seed nodes and peer nodes.
 
-## Seed Node
+## Overview
 
-Seed nodes are special nodes in a peer-to-peer network that act as initial contact points for other nodes to join the network. They provide a list of known active nodes to new nodes, allowing them to bootstrap and establish connections with other peers in the network.
+In a P2P network, nodes communicate directly with each other without relying on a central server. This implementation features two types of nodes:
 
-## Peer Node
+### Seed Node
 
-Peer nodes are the nodes that are connected to the network and are not seed nodes. They are the nodes that store and retrieve data from the network.
+Seed nodes serve as initial points of contact in the network. They maintain a list of active peers and help new nodes discover existing connections, allowing them to join the network seamlessly.
 
-## Seed Node and Peer Node Working
+### Peer Node
 
-When a peer node starts, it connects to n/2 + 1 seed node to get the network's list of active peer nodes. It then connects to the active peer nodes and starts the process of data storage and retrieval.
+Peer nodes are the main participants in the network. They retrieve and store data while maintaining connections with other peers.
 
-## Seed Node and Peer Node Communication
+## How Seed and Peer Nodes Interact
 
-The seed node and peer node communicate using the following messages:
+1. When a peer node starts, it connects to at least `n/2 + 1` seed nodes to obtain a list of active peers in the network.
+2. Once connected, the peer node establishes communication with these peers and begins exchanging data.
 
-- `Get Peer List`: The peer node sends this message to the seed node to get the list of active peer nodes in the network.
-- `Peer List`: The seed node sends this message to the peer node containing the list of active peer nodes in the network.
+## Message Exchange Between Nodes
 
-## How to see the Message List and Peer List
+Seed nodes and peer nodes communicate using specific message types:
 
-- To see the list of messages and peer nodes, you can enter the following commands in the terminal where the peer node is running:
-  - `1` to see the list of active peer nodes in the network connected to the current peer node.
-  - `2` to see the list of messages sent and received by the peer nodes.
+- **Get Peer List** – A peer requests the list of active nodes from a seed node.
+- **Peer List** – The seed node responds with the list of active peers in the network.
 
-## Peer Node and Peer Node Communication
+Peer nodes also communicate with each other using these messages:
 
-The peer node and peer node communicate using the following messages:
+- **Peer Request** – A peer node requests a connection with another peer.
+- **Peer Reply** – The receiving peer node accepts the connection request.
+- **Liveliness** – A peer checks if another peer is still active.
+- **Liveliness Reply** – A peer responds to confirm its presence.
+- **getData** – A peer requests data from another peer.
+- **Message** – A peer sends data to another peer.
+- **Death** – A peer informs the seed node that it is disconnecting from the network.
 
-- `Peer Request`: The peer node sends this message to another peer node to connect.
-- `Peer Reply`: The peer node sends this message to the peer node to accept the connection request.
-- `Liveliness`: The peer node sends this message to the peer node to check if it is alive.
-- `Liveliness Reply`: The peer node sends this message to the peer node to reply to the liveliness message.
-- `getData`: The peer node sends this message to the peer node to get the data.
-- `Message`: The peer node sends this message to the peer node to send the data.
-- `Death`: The peer node sends this message to the seed node to close the connection.
+## Viewing Active Peers and Messages
 
-## How to Run?
+To check network activity, run the following commands in the peer node terminal:
 
-- Run '`pip install colorlog` to install colorlog.
-- Run the seed node using the command `python3 seed.py`
-- Run the peer node using the command `python3 peer.py`
-- Run the second command to run 5 peer nodes (you can change it as per requirements).
-- After closing the peer and seed nodes you can run `python3 clean.py` to remove the output files and the bin folder.
+- Press `1` to display the active peer connections.
+- Press `2` to view the list of messages exchanged between peer nodes.
 
-## Stopping the Peer Node
+## Running the Program
 
-- To stop the peer node, press `Ctrl + C` or type anything other than 1 or 2 in the terminal where the peer node is running.
+1. Install dependencies:
+   ```sh
+   pip install colorlog
+   ```
+2. Start a seed node:
+   ```sh
+   python3 seed.py
+   ```
+3. Launch peer nodes:
+   ```sh
+   python3 peer.py
+   ```
+   Run this command multiple times (e.g., 5 times) to create multiple peer nodes.
+4. To clean up logs and output files after stopping nodes:
+   ```sh
+   python3 clean.py
+   ```
 
-## Output Files
+## Stopping a Peer Node
 
-- Two output directories will be created `seeds` and `peers` in `logs` folder containing the logs of the seed node and peer nodes respectively.
-- The logs will contain the messages sent and received by the seed node and peer nodes.
-- It will also contain the liveliness check and the close connections details.
-- You can differentiate the logs based on colors of logs.
+To stop a peer node, either:
+
+- Press `Ctrl + C`
+- Enter any input other than `1` or `2`
+
+## Log Files and Output
+
+- Logs are stored in the `logs` directory under `seeds/` (for seed nodes) and `peers/` (for peer nodes).
+- Logs contain details about messages sent/received, liveliness checks, and connection closures.
+- Different log levels are highlighted in various colours for easy identification.
 
 ## Contributors
 
