@@ -5,6 +5,7 @@ import random
 from time import sleep
 import time
 import logging
+import sys
 
 # Global variables
 my_addr = None
@@ -212,12 +213,15 @@ def send_all_peers(data,peer_port):
 
 
 def send_messages():
+    count = 0
     while True:
         sleep(time_to_send_message)
-        data = random.choice(['hello', 'namaste', 'bonjour', 'ciao', 'konnichiwa'])
-        time_stamp = time.localtime() 
-        message = {'type':'message', 'data':data, 'time':time.asctime(time_stamp)}
-        send_all_peers(message,None)
+        if count < 10:
+            data = random.choice(['hello', 'namaste', 'bonjour', 'ciao', 'konnichiwa'])
+            time_stamp = time.localtime() 
+            message = {'type':'message', 'data':data, 'time':time.asctime(time_stamp)}
+            send_all_peers(message,None)
+            count += 1
 
 
 # Main function
@@ -237,7 +241,7 @@ def main():
         logger.addHandler(file_handler)
     
         with open(output_file,'w') as f:
-            logger.info(f"Peer started at {my_addr}",extra={'log_color':'bold_green'})
+            logger.info(f"Peer started at {my_addr}", extra={'log_color':'bold_green'})
         
         # connect to the seeds
         with open('config.csv', 'r') as f:    
@@ -276,6 +280,7 @@ def main():
         # start a new thread to accept the peers
         start_new_thread(accept_peers,(sock,))       
         random.shuffle(peer_list)
+        print("Available peers: ", end="")
         print(peer_list)
 
 
@@ -302,16 +307,19 @@ def main():
         
         start_new_thread(send_messages,())
         global message_list
+
         while True:
-            print("Enter 1. 'Peer List'\n 2. 'Message List'\n 3. 'Exit'\n") 
-            command = int(input())
-            if command == 1:
+            print("\nCommands: 1. Peer List\t\t2. Message List\t\t3. Exit")
+            user_choice = input()
+            if user_choice == "1":
                 for peer in connected_peers:
                     print(peer)
-            elif command == 2:
+            elif user_choice == "2":
                 print(message_list)
             else:
-                break
+                print("Killing node in 3 seconds...")
+                time.sleep(3)
+                sys.exit(0)
 
 
 if __name__ == '__main__':
