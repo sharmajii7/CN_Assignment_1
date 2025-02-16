@@ -79,4 +79,4 @@ To stop a peer node, either:
 ## Contributors
 
 - [Dishit Sharma (B22CS082)](https://github.com/sharmajii7)
-- [Kiran S (B22CS100)](https://github.com/)
+- [Kiran S (B22CS100)](https://github.com/Kiran-velan)
