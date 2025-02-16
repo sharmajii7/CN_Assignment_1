@@ -20,16 +20,6 @@ message_list = set()
 # Create logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-colors = {
-    'INFO' :{
-        'death': 'red',
-        'liveness': 'green',
-        'liveness_reply': 'green',
-        'peer_request': 'blue',
-        'peer_reply': 'blue',
-        'message': 'yellow'
-    }
-}
 
 class Peer():
     def __init__(self,ip,port,conn):
@@ -105,7 +95,6 @@ def check_liveness(peer_port):
         except:
             print(f"Closing connection from Peer_{peer_port}")
             break
-
 
 
 # Function to listen to the peer
@@ -233,7 +222,7 @@ def send_messages():
 
 # Main function
 def main():
-    global my_addr, connected_peers, output_file, server_sockets, logger, colors
+    global my_addr, connected_peers, output_file, server_sockets, logger
 
     # create a socket for the client
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -270,7 +259,7 @@ def main():
         random.shuffle(server_sockets)
         server_sockets = server_sockets[0:(n//2+1)]
         for server_sock in server_sockets:
-            message = {'type':'getData', 'ip':my_addr[0], 'port':my_addr[1]}
+            message = {'type':'getPeerList', 'ip':my_addr[0], 'port':my_addr[1]}
             server_sock.sendall(json.dumps(message).encode())
             pl = server_sock.recv(2048).decode()
             print(pl)

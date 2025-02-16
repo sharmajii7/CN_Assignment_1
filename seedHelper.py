@@ -37,7 +37,7 @@ def handle_peer(peer):
 
         print(f"Peer {peer.address[1]}: {message}")
 
-        if message.get("type") == "getData":
+        if message.get("type") == "getPeerList":
             current_peers = [str(p) for p in active_peers]
             active_peers.append(PeerNode(peer.connection, (message["ip"], message["port"])))
             peer.address = (message["ip"], message["port"])
@@ -45,7 +45,7 @@ def handle_peer(peer):
             with open(log_file, "a") as log:
                 print(f"Peer {peer.address[1]} registered: {peer.address}", file=log)
 
-            response = {"type": "getData_reply", "Peers": current_peers}
+            response = {"type": "getPeerList_reply", "Peers": current_peers}
             peer.connection.sendall(json.dumps(response).encode())
 
         elif message.get("type") == "Death":
@@ -66,20 +66,6 @@ def accept_connections(server_socket):
             print(f"New peer connected: {address}", file=log)
 
         threading.Thread(target=handle_peer, args=(new_peer,)).start()
-
-# Function to send a message to all peers except a given one
-def broadcast_message(message, exclude_idx):
-    global active_peers, log_file
-
-    for i, peer in enumerate(active_peers):
-        if i == exclude_idx:
-            continue
-        try:
-            peer.connection.sendall(message.encode())
-        except:
-            with open(log_file, "a") as log:
-                print(f"Peer {peer.address[1]} disconnected", file=log)
-            active_peers.pop(i)
 
 # Main function
 def main(host, port, node_identifier):

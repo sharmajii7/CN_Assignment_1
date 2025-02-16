@@ -45,19 +45,15 @@ To check network activity, run the following commands in the peer node terminal:
 
 ## Running the Program
 
-1. Install dependencies:
-   ```sh
-   pip install colorlog
-   ```
-2. Start a seed node:
+1. Start a seed node:
    ```sh
    python3 seed.py
    ```
-3. Launch peer nodes:
+2. Launch peer nodes:
    ```sh
    python3 peer.py
    ```
-4. To clean up logs and output files after stopping nodes:
+3. To clean up logs and output files after stopping nodes:
    ```sh
    python3 logRemover.py
    ```
@@ -73,7 +69,6 @@ To stop a peer node, either:
 
 - Logs are stored in the `logs` directory under `seeds/` (for seed nodes) and `peers/` (for peer nodes).
 - Logs contain details about messages sent/received, liveliness checks, and connection closures.
-- Different log levels are highlighted in various colours for easy identification.
 
 ## Contributors
 
