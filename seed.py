@@ -3,7 +3,7 @@ import platform
 import os
 
 # Ensure necessary directories exist
-for directory in ["bin/servers", "bin/clients"]:
+for directory in ["logs/seeds", "logs/peers"]:
     os.makedirs(directory, exist_ok=True)
 
 config_file = "config.csv"

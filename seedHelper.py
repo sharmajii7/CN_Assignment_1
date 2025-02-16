@@ -85,7 +85,7 @@ def broadcast_message(message, exclude_idx):
 def main(host, port, node_identifier):
     global log_file
 
-    log_file = f"bin/seeds/seed_{node_identifier}.txt"
+    log_file = f"logs/seeds/seed_{node_identifier}.txt"
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
         server.bind((host, port))

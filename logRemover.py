@@ -1,7 +1,7 @@
 import os
 import shutil
 
-bin_folder = "bin"
+bin_folder = "logs"
 
 if os.path.exists(bin_folder):
     shutil.rmtree(bin_folder)

@@ -239,7 +239,7 @@ def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.bind(('127.0.0.1',0))
         my_addr = sock.getsockname()
-        output_file = f'bin/peers/peer_{my_addr[1]}.log'
+        output_file = f'logs/peers/peer_{my_addr[1]}.log'
         # Create file handler and set level to DEBUG
         file_handler = logging.FileHandler(output_file)
         file_handler.setLevel(logging.DEBUG)
