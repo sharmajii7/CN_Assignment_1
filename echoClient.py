@@ -58,10 +58,6 @@ def listen_server(conn):
 def add_padding(raw_data):
     return raw_data + ' '*(PACKET_LEN-len(raw_data))
 
-def remove_padding(data):
-    return data.strip()
-
-
 # Function to send the dead-node message to the seed server
 def send_death_message(peer_port):
     
@@ -135,7 +131,7 @@ def listen_peer(peer):
         
         # convert the data to json
         try:
-            data=json.loads(remove_padding(data))
+            data=json.loads(data.strip())
         except Exception as e:
             print(f'Error in listening peer {peer.ip}:{peer.port}: ',data,e)
             continue
