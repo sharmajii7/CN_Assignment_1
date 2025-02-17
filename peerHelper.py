@@ -6,6 +6,45 @@ from time import sleep
 import time
 import logging
 import sys
+import numpy as np
+
+def generate_powerlaw_degree_sequence(m, gamma=2.0, min_degree=1, max_degree=10, seed=12):
+    """
+    Generate a degree sequence for m nodes sampled from a power law distribution
+    with a fixed random seed for reproducibility.
+
+    Parameters:
+      m (int): Number of nodes.
+      gamma (float): Power law exponent (commonly between 2 and 3).
+      min_degree (int): Minimum degree a node can have.
+      max_degree (int): Maximum degree a node can have.
+      seed (int): Random seed for reproducibility.
+    
+    Returns:
+      np.array: Array of length m with the degree of each node.
+    """
+    # Set the random seed
+    np.random.seed(seed)
+    
+    # Create possible degree values
+    degrees = np.arange(min_degree, max_degree + 1)
+    
+    # Calculate weights proportional to d^(-gamma)
+    weights = degrees ** (-gamma)
+    weights /= weights.sum()  # Normalize to form a probability distribution
+    
+    # Sample m degrees from the defined range according to the power law probabilities
+    sequence = np.random.choice(degrees, m, p=weights)
+    
+    # Ensure the sum of the degrees is even (required for some graph models)
+    if sequence.sum() % 2 != 0:
+        # Adjust the first element if necessary
+        if sequence[0] < max_degree:
+            sequence[0] += 1
+        else:
+            sequence[0] -= 1
+    
+    return sorted(sequence, reverse=True)
 
 # Global variables
 my_addr = None
@@ -21,6 +60,9 @@ message_list = set()
 # Create logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+maxConn = 0
+
+file_name = "degreeCount.txt"
 
 class Peer():
     def __init__(self,ip,port,conn):
@@ -50,8 +92,7 @@ def add_padding(raw_data):
     return raw_data + ' '*(PACKET_LEN-len(raw_data))
 
 # Function to send the dead-node message to the seed server
-def send_death_message(peer_port):
-    
+def send_death_message(peer_port):  
     cur_time = time.localtime()
     message = {'type':'Death', 'ip':my_addr[0], 'port':peer_port, 'time':time.asctime(cur_time)}
     message = add_padding(json.dumps(message)).encode()
@@ -87,7 +128,7 @@ def check_liveness(peer_port):
         try:
             connected_peers[peer_port].conn.sendall(message)
         except:
-            print(f"Error in sending liveness message to  Peer_{peer_port}")
+            print(f"Error in sending liveness message to Peer_{peer_port}")
  
         # increase the number of tries
         try:
@@ -127,7 +168,7 @@ def listen_peer(peer):
             continue
         
         # if the type of the message is peer_Request then send the peer_Reply message to the peer
-        if(data['type']=='peer_Request'):
+        if data['type'] == 'peer_Request':
             cur_time = time.localtime()
             message = {'type':'peer_Reply', 'ip':my_addr[0], 'port':my_addr[1], 'time':time.asctime(cur_time)}
             message = add_padding(json.dumps(message)).encode()
@@ -225,8 +266,10 @@ def send_messages():
 
 
 # Main function
-def main():
-    global my_addr, connected_peers, output_file, server_sockets, logger
+def main(index, NUMBER_OF_PEERS):
+    global my_addr, connected_peers, output_file, server_sockets, logger, degree_sequence
+    degree_sequence = generate_powerlaw_degree_sequence(NUMBER_OF_PEERS)
+    maxConn = degree_sequence[index]
 
     # create a socket for the client
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -242,6 +285,9 @@ def main():
     
         with open(output_file,'w') as f:
             logger.info(f"Peer started at {my_addr}", extra={'log_color':'bold_green'})
+        
+        with open(file_name, "a") as file:
+            file.write(f"{my_addr[0]},{my_addr[1]},{maxConn},0\n")
         
         # connect to the seeds
         with open('config.csv', 'r') as f:    
@@ -275,35 +321,49 @@ def main():
                 peer_list.add(tuple(item))
         peer_list = list(peer_list)
         
-
-        
         # start a new thread to accept the peers
         start_new_thread(accept_peers,(sock,))       
         random.shuffle(peer_list)
         print("Available peers: ", end="")
         print(peer_list)
+        
+        degree_map = {}
+        with open(file_name, "r") as file:
+            for line in file:
+                parts = line.strip().split(",")
+                ip_port = (parts[0], parts[1])
+                maxi = int(parts[2])
+                count = int(parts[3])
+                degree_map[ip_port] = [maxi, count]
 
-
-        # connecting to maximum 4 distinct peers
-        peer_count=0
         for i in range(len(peer_list)):
+            s1 = str(my_addr[0])
+            s2 = str(my_addr[1])
+            p1 = str(peer_list[i][0])
+            p2 = str(peer_list[i][1])
+            if degree_map[(s1, s2)][1] >= degree_map[(s1, s2)][0]:
+                break
+            if degree_map[(p1, p2)][1] >= degree_map[(p1, p2)][0]:
+                continue
             s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
-                s.connect((peer_list[i][0],peer_list[i][1]))
+                s.connect((peer_list[i][0], peer_list[i][1]))
                 start_new_thread(listen_peer,(Peer(peer_list[i][0],peer_list[i][1],s),))
                 start_new_thread(check_liveness,(peer_list[i][1],))
                 message = {'type':'peer_Request','ip':my_addr[0],'port':my_addr[1]}
                 s.sendall(add_padding(json.dumps(message)).encode())
                 connected_peers[peer_list[i][1]] = Peer(peer_list[i][0],peer_list[i][1],s)
-                peer_count+=1
+                degree_map[(s1, s2)][1] += 1
+                degree_map[(p1, p2)][1] += 1
                 print(f'Connected with {peer_list[i]}')
-
             except Exception as e:
                 print(f'Connection failed with {peer_list[i]}')
                 print(e)
+                
+        with open(file_name, "w") as file:
+            for (ip, port), (maxi, count) in degree_map.items():
+                file.write(f"{ip},{port},{maxi},{count}\n")
 
-            if(peer_count>=4):
-                break
         
         start_new_thread(send_messages,())
         global message_list
@@ -323,4 +383,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(int(sys.argv[1]), int(sys.argv[2]))
