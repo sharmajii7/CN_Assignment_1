@@ -23,7 +23,6 @@ Peer nodes are the main participants in the network. They maintain peer-to-peer 
 - Establish and maintain connections with other peers.
 - Periodically check the liveliness of connected peers.
 - Exchange messages using a Gossip-based protocol.
-- Handle incoming data requests.
 
 ## 🔄 Message Exchange
 
@@ -38,7 +37,6 @@ Seed and peer nodes communicate using structured messages:
 - **Peer Reply** → Accept a connection request.
 - **Liveliness** → Check if a peer is still active.
 - **Liveliness Reply** → Confirm presence.
-- **getData** → Request data from a peer.
 - **Message** → Send data to another peer.
 - **Death** → Notify seed node about peer disconnection.
 
